@@ -68,15 +68,56 @@ describe TDiary::Plugin do
 	end
 
 	describe '#footer_proc' do
-		it 'add_footer_procで登録したブロックが実行されること'
+		before do
+			@plugin.__send__(:add_footer_proc, lambda { 'footer1 ' })
+			@plugin.__send__(:add_footer_proc, lambda { 'footer2' })
+		end
+		subject { @plugin.__send__(:footer_proc) }
+
+		it 'add_footer_procで登録したブロックが実行されること' do
+			should eq 'footer1 footer2'
+		end
 	end
 
 	describe '#update_proc' do
-		it 'add_update_procで登録したブロックが実行されること'
+		let (:proc1) { lambda {} }
+		let (:proc2) { lambda {} }
+		before do
+			@plugin.__send__(:add_update_proc, proc1)
+			@plugin.__send__(:add_update_proc, proc2)
+		end
+		subject { @plugin.__send__(:update_proc, nil, nil) }
+
+		it 'add_update_procで登録したブロックが実行されること' do
+			proc1.should_receive(:call)
+			proc2.should_receive(:call)
+			# should_receiveの場合はsubjectが使えないため明示的に実行
+			@plugin.__send__(:update_proc)
+		end
+
+		it '空の文字列を返すこと' do
+			should eq ''
+		end
 	end
 
 	describe '#title_proc' do
-		it 'add_title_procで登録したブロックが実行されること'
+		let (:proc1) { lambda {|date, title| "#{title}:title1" } }
+		let (:proc2) { lambda {|date, title| "#{title}:title2" } }
+		before do
+			@plugin.__send__(:add_title_proc, proc1)
+			@plugin.__send__(:add_title_proc, proc2)
+		end
+		subject { @plugin.__send__(:title_proc, nil, nil) }
+
+		it 'add_title_procで登録したブロックを実行し、タイトル文字列を返すこと' do
+			should eq ':title1:title2'
+		end
+
+		it 'apply_pluginメソッドを呼び出すこと' do
+			@plugin.should_receive(:apply_plugin)
+			# should_receiveの場合はsubjectが使えないため明示的に実行
+			@plugin.__send__(:title_proc, nil, nil)
+		end
 	end
 
 	describe '#body_enter_proc' do
