@@ -94,6 +94,8 @@ module TDiary
 						elsif /^\d{4}$/ =~ date
 							tdiary = TDiary::TDiaryNYear::new( cgi, "month.rhtml", conf )
 						end
+					elsif params['plugin']
+						tdiary = TDiary::TDiaryPluginView::new( cgi, "plugin.rhtml", conf )
 					elsif params['category']
 						tdiary = TDiary::TDiaryCategoryView::new( cgi, "category.rhtml", conf )
 					elsif params['q']

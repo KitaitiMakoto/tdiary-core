@@ -1088,6 +1088,24 @@ EOS
 	end
 
 	#
+	# class TDiaryPluginView
+	#  base of plugin view mode classes
+	#
+	class TDiaryPluginView < TDiaryDay
+		attr_reader :last_modified
+		def initialize(cgi, rhtml, conf)
+			super
+			@plugin_name = cgi.params['plugin'][0]
+		end
+
+		def eval_rhtml( prefix = '' )
+			# load plugin files
+			load_plugins
+			@plugin.__send__(:content_proc, @plugin_name, @date)
+		end
+	end
+
+	#
 	# class TDiaryCategoryView
 	#  base of category view mode classes
 	#
