@@ -228,9 +228,6 @@ module TDiary
 				'cgi' => @cgi,
 				'years' => @years,
 				'cache_path' => @io.cache_path,
-				'date' => @date,
-				'comment' => @comment,
-				'last_modified' => last_modified,
 				'logger' => @logger
 			)
 			# initialize no memoize valiable.
