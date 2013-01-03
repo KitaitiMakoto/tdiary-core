@@ -28,8 +28,8 @@ module TDiary
             item.description = entry.to_enum(:each_section).map {|section|
               desc = ''
               subtitle = section.subtitle_to_html
-              if subtitle_to_html && !subtitle_to_html.empty?
-                desc << '<h3>' << section.subtitle_to_html << '</h3>'
+              if subtitle && !subtitle.empty?
+                desc << "<h3>#{subtitle}</h3>"
               end
               desc << '<div class="section">' << section.body_to_html << '</div>'
             }.join
