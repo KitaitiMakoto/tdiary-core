@@ -32,7 +32,7 @@ module TDiary
               if subtitle && !subtitle.empty?
                 desc << "<h3>#{subtitle}</h3>"
               end
-              desc << "<div class="section">#{section.body_to_html}</div>"
+              desc << %Q|<div class="section">#{section.body_to_html}</div>|
             }.join
           end
         end
@@ -48,7 +48,7 @@ module TDiary
       count = 0
       @io.calendar.reverse_each do |year, months|
         months.reverse_each do |month|
-          @io.transaction(Date.new(year.to_i, month.to_i)) do |diaries|
+          @io.transaction Date.new(year.to_i, month.to_i) do |diaries|
             diaries.reverse_each do |date, entry|
               if entry.visible? and count < limit
                 entries << entry
