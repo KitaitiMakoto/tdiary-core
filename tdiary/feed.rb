@@ -2,7 +2,7 @@ require 'rss'
 
 module TDiary
   class Feed < Application
-    DEFAULT_COUNT = 15
+    ENTRY_COUNT = 15
 
     def call(env)
       request = adopt_rack_request_to_plain_old_tdiary_style(env)
@@ -10,7 +10,7 @@ module TDiary
       tdiary = TDiaryLatest.new(CGI.new, nil, conf)
       @io = conf.io_class.new(tdiary)
 
-      entries = entries(DEFAULT_COUNT)
+      entries = entries(ENTRY_COUNT)
       feed = RSS::Maker.make(@target) {|maker|
         maker.channel.about = conf['makeatom.url'] || "#{conf.base_url}recent.atom"
         maker.channel.title = conf.html_title
