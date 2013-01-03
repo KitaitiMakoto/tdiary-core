@@ -25,13 +25,14 @@ module TDiary
             item.title = entry.title
             item.published = entry.date
             item.updated = entry.last_modified
-            item.description = entry.to_enum(:each_section).map {|section|
+            item.content.type = 'html'
+            item.content.content = entry.to_enum(:each_section).map {|section|
               desc = ''
               subtitle = section.subtitle_to_html
               if subtitle && !subtitle.empty?
                 desc << "<h3>#{subtitle}</h3>"
               end
-              desc << '<div class="section">' << section.body_to_html << '</div>'
+              desc << "<div class="section">#{section.body_to_html}</div>"
             }.join
           end
         end
