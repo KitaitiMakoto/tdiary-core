@@ -30,7 +30,7 @@ module TDiary
         end
       }
 
-      Response.new([feed.to_s], 200, {'Content-Type' => 'application/atom+xml'})
+      Response.new([feed.to_s], 200, {'Content-Type' => 'application/atom+xml', 'Last-Modified' => entries.first.last_modified.httpdate})
     end
 
     private
