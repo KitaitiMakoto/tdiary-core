@@ -25,7 +25,7 @@ module TDiary
             item.title = entry.title
             item.published = entry.date
             item.updated = entry.last_modified
-            item.description = entry.to_enum(:each_section).map {|section| '<div class="section">' << section.body_to_html << '</div>'}.join
+            item.description = entry.to_enum(:each_section).map {|section| '<h3>' << section.subtitle_to_html << '</h3>' << '<div class="section">' << section.body_to_html << '</div>'}.join
           end
         end
       }
