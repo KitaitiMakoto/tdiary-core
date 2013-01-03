@@ -44,6 +44,12 @@ map "#{base_dir}/assets" do
 	run environment
 end
 
+map "#{base_dir}/recent.atom" do
+	require 'tdiary/feed'
+	# use Rack::Cache
+	run TDiary::Feed.new('atom')
+end
+
 map "#{base_dir}/" do
 	use TDiary::Rack::HtmlAnchor
 	use TDiary::Rack::ValidRequestPath
