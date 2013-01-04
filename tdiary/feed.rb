@@ -54,8 +54,8 @@ module TDiary
                 entries << entry
                 count += 1
               end
-              TDiaryBase::DIRTY_DIARY
             end
+            TDiaryBase::DIRTY_DIARY
           end
           break if count >= limit
         end
