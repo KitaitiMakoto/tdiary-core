@@ -6,22 +6,28 @@ module TDiary
 
     def call(env)
       request = adopt_rack_request_to_plain_old_tdiary_style(env)
-      conf = Config.new(CGI.new, request)
-      tdiary = TDiaryLatest.new(CGI.new, nil, conf)
-      @io = conf.io_class.new(tdiary)
+      @conf = Config.new(CGI.new, request)
+      tdiary = TDiaryLatest.new(CGI.new, nil, @conf)
+      @io = @conf.io_class.new(tdiary)
 
+      Response.new([feed.to_s], 200, {'Content-Type' => 'application/atom+xml', 'Last-Modified' => entries.first.last_modified.httpdate})
+    end
+
+    private
+
+    def feed(entry_count=ENTRY_COUNT)
       entries = entries(ENTRY_COUNT)
-      feed = RSS::Maker.make(@target) {|maker|
-        maker.channel.about = conf['makeatom.url'] || "#{conf.base_url}recent.atom"
-        maker.channel.title = conf.html_title
-        maker.channel.author = conf.author_name
-        maker.channel.description = conf.description || ''
-        maker.channel.link = conf.base_url
-        maker.channel.updated = entries.first.last_modified
+      RSS::Maker.make @target do |maker|
+        maker.channel.about = @conf['makeatom.url'] || "#{@conf.base_url}recent.atom"
+        maker.channel.title = @conf.html_title
+        maker.channel.author = @conf.author_name
+        maker.channel.description = @conf.description || ''
+        maker.channel.link = @conf.base_url
+        last_modified = Time.at(0)
 
         entries.each do |entry|
           maker.items.new_item do |item|
-            item.link = "#{conf.base_url}?date=#{entry.date.strftime('%Y%m%d')}"
+            item.link = "#{@conf.base_url}?date=#{entry.date.strftime('%Y%m%d')}"
             item.title = entry.title
             item.published = entry.date
             item.updated = entry.last_modified
@@ -34,16 +40,16 @@ module TDiary
               end
               desc << %Q|<div class="section">#{section.body_to_html}</div>|
             }.join
+
+            last_modified = [last_modified, entry.last_modified].max
           end
         end
-      }
 
-      Response.new([feed.to_s], 200, {'Content-Type' => 'application/atom+xml', 'Last-Modified' => entries.first.last_modified.httpdate})
+        maker.channel.updated = last_modified
+      end
     end
 
-    private
-
-    def entries(limit=DEFAULT_COUNT)
+    def entries(limit=ENTRY_COUNT)
       entries = []
       count = 0
       @io.calendar.reverse_each do |year, months|
